@@ -1,4 +1,6 @@
 name: Ubuntu Image Builder
+display-name: Building Ubuntu Image for ${{ github.actor }}
+
 on:
   workflow_dispatch:
 
