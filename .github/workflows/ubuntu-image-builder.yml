@@ -18,8 +18,6 @@ jobs:
 
           pushd ~/ubuntu
 
-          sudo apt update
-          sudo apt install genisoimage -y
           sudo snap install ubuntu-image --classic
           cat <<EOF > amd64.yml
           name: ubuntu-amd64
@@ -73,8 +71,7 @@ jobs:
 
           sudo ubuntu-image --workdir ~/work-dir --output-dir ~/output-dir --disk-info ~/ubuntu/disk.info classic ~/ubuntu/amd64.yml
 
-          sudo mount -o loop ./ubuntu-amd64.img /mnt
-          sudo genisoimage -o ./ubuntu-amd64.iso -R -J /mnt
+          sudo qemu-img convert -f raw -O vpc ~/output-dir/ubuntu-amd64.img ~/output-dir/ubuntu-amd64.iso
 
           mkdir -p ~/ubuntu-image-output
           cp ~/ubuntu/amd64.yml ~/ubuntu-image-output/
