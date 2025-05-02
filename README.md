@@ -6,9 +6,9 @@ To build an `Ubuntu` image, there are a few components required;
 
 - `ubuntu-image` - The tool that builds the image.
 - `configuration file` - The configuration file that describes the image to be built.
-- `disk.info` (_Optional_) - The disk.info file that has the metadata for the image.
+- `disk.info` (_Optional_) - The `disk.info` file that has the metadata for the image.
 
-Steps to build an image:
+Steps to build the image:
 
 - Install the `ubuntu-image` tool.
 - Create a configuration file that describes the image to be built.
