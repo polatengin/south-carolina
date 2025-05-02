@@ -1,0 +1,76 @@
+name: Ubuntu Image Builder
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create new repo
+        run: |
+          mkdir -p ~/work-dir
+          mkdir -p ~/output-dir
+          mkdir -p ~/ubuntu
+
+          pushd ~/ubuntu
+
+          sudo snap install ubuntu-image --classic
+          cat <<EOF > amd64.yml
+          name: ubuntu-amd64
+          display-name: Ubuntu for amd64
+          revision: 1
+          architecture: amd64
+          series: noble
+          class: preinstalled
+
+          kernel: linux-image-generic
+
+          gadget:
+            url: https://github.com/canonical/pc-gadget
+            branch: classic
+            type: git
+
+          rootfs:
+            components:
+              - main
+              - restricted
+              - universe
+              - multiverse
+            archive: ubuntu
+            mirror: http://archive.ubuntu.com/ubuntu/
+            pocket: updates
+            seed:
+              urls:
+                - git://git.launchpad.net/~ubuntu-core-dev/ubuntu-seeds/+git/
+              names:
+                - server
+                - minimal
+              branch: noble
+              vcs: true
+            sources-list-deb822: true
+
+          customization:
+            extra-snaps:
+              - name: snapd
+
+          artifacts:
+            img:
+              - name: ubuntu-amd64.img
+            manifest:
+              name: ubuntu-amd64.manifest
+          EOF
+
+          cat <<EOF > disk.info
+          Built with: $(ubuntu-image --version)
+          Built by: ${{ github.actor }}
+          Time: $(date -u +"%b %d %Y")
+          Gadget: 64bit PC Gadget Snap
+          EOF
+
+          sudo ubuntu-image --workdir ~/work-dir --output-dir ~/output-dir --disk-info ~/ubuntu/disk.info classic ~/ubuntu/amd64.yml
+
+          popd
+
+          ls -lah ~/output-dir
