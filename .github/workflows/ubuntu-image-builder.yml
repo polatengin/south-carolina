@@ -62,12 +62,10 @@ jobs:
               name: ubuntu-amd64.manifest
           EOF
 
-          cat <<EOF > disk.info
-          Built with: $(ubuntu-image --version)
-          Built by: ${{ github.actor }}
-          Time: $(date -u +"%b %d %Y")
-          Gadget: 64bit PC Gadget Snap
-          EOF
+          echo "Built with: $(ubuntu-image --version)" > disk.info
+          echo "Built by: ${{ github.actor }}" >> disk.info
+          echo "Time: $(date -u +"%b %d %Y")" >> disk.info
+          echo "Gadget: 64bit PC Gadget Snap" >> disk.info
 
           sudo ubuntu-image --workdir ~/work-dir --output-dir ~/output-dir --disk-info ~/ubuntu/disk.info classic ~/ubuntu/amd64.yml
 
