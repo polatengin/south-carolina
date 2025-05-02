@@ -19,6 +19,9 @@ jobs:
           pushd ~/ubuntu
 
           sudo snap install ubuntu-image --classic
+          sudo apt update
+          sudo apt install qemu-utils -y
+
           cat <<EOF > amd64.yml
           name: ubuntu-amd64
           display-name: Ubuntu for amd64
