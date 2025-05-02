@@ -71,6 +71,11 @@ jobs:
 
           sudo ubuntu-image --workdir ~/work-dir --output-dir ~/output-dir --disk-info ~/ubuntu/disk.info classic ~/ubuntu/amd64.yml
 
+          mkdir -p ~/ubuntu-image-output
+          cp ~/ubuntu/amd64.yml ~/ubuntu-image-output/
+          cp ~/ubuntu/disk.info ~/ubuntu-image-output/
+          cp ~/output-dir/ubuntu-amd64.img ~/ubuntu-image-output/
+
           popd
 
       - name: Upload built artifacts
