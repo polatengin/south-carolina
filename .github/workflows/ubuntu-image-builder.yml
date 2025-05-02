@@ -1,11 +1,11 @@
 name: Ubuntu Image Builder
-display-name: Building Ubuntu Image for ${{ github.actor }}
 
 on:
   workflow_dispatch:
 
 jobs:
   build:
+    name: Build by ${{ github.actor }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
