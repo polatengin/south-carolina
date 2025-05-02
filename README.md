@@ -95,6 +95,16 @@ drwxr-x--- 8 azureuser azureuser 4.0K May  1 15:38 ..
 -rw-r--r-- 1 root      root       16K May  1 15:47 ubuntu-amd64.manifest
 ```
 
+When the image is built `ubuntu-amd64.img` and `ubuntu-amd64.manifest` files will be created in the `~/output-dir` directory.
+
+To build the ISO image, run the following command:
+
+```bash
+sudo qemu-img convert -f raw -O vpc ~/output-dir/ubuntu-amd64.img ~/output-dir/ubuntu-amd64.iso
+```
+
+This command will convert the `ubuntu-amd64.img` file to an ISO image called `ubuntu-amd64.iso`.
+
 [.github/workflows/ubuntu-image-builder.yml](.github/workflows/ubuntu-image-builder.yml) is the workflow file that runs the pipeline. It is triggered on `workflow_dispatch` (_manual trigger_) events.
 
 The workflow uses the `ubuntu-latest` image as the base image and installs the `ubuntu-image` tool.
