@@ -12,7 +12,7 @@ Steps to build the image:
 
 - Install the `ubuntu-image` tool.
 - Create a configuration file that describes the image to be built.
-- Create a disk.info file that has the metadata for the image.
+- Create a `disk.info` file that has the metadata for the image.
 - Run the `ubuntu-image` tool with the configuration file and disk.info file as arguments.
 - The image will be built and saved to the specified location.
 
