@@ -18,6 +18,8 @@ jobs:
 
           pushd ~/ubuntu
 
+          sudo apt update
+          sudo apt install genisoimage -y
           sudo snap install ubuntu-image --classic
           cat <<EOF > amd64.yml
           name: ubuntu-amd64
@@ -71,10 +73,14 @@ jobs:
 
           sudo ubuntu-image --workdir ~/work-dir --output-dir ~/output-dir --disk-info ~/ubuntu/disk.info classic ~/ubuntu/amd64.yml
 
+          sudo mount -o loop ./ubuntu-amd64.img /mnt
+          sudo genisoimage -o ./ubuntu-amd64.iso -R -J /mnt
+
           mkdir -p ~/ubuntu-image-output
           cp ~/ubuntu/amd64.yml ~/ubuntu-image-output/
           cp ~/ubuntu/disk.info ~/ubuntu-image-output/
           cp ~/output-dir/ubuntu-amd64.img ~/ubuntu-image-output/
+          cp ~/output-dir/ubuntu-amd64.iso ~/ubuntu-image-output/
 
           popd
 
@@ -82,7 +88,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ubuntu-build-output.zip
-          path: |
-            ~/ubuntu-image-output/amd64.yml
-            ~/ubuntu-image-output/disk.info
-            ~/ubuntu-image-output/ubuntu-amd64.img
+          path: ~/ubuntu-image-output/
+          compression-level: 0
