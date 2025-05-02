@@ -5,12 +5,11 @@ on:
 
 jobs:
   build:
-    name: Build by ${{ github.actor }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
-      - name: Create new repo
+      - name: Build Ubuntu Image
         run: |
           mkdir -p ~/work-dir
           mkdir -p ~/output-dir
@@ -90,3 +89,22 @@ jobs:
           name: ubuntu-build-output.zip
           path: ~/ubuntu-image-output/
           compression-level: 0
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Create required resources
+        uses: azure/cli@v2
+        with:
+          inlineScripts: |
+            SUFFIX=$(echo $RANDOM | cut -c 1-5)
+            RESOURCE_GROUP_NAME="ubuntu-image-${SUFFIX}-rg"
+            STORAGE_ACCOUNT_NAME="ubuntuimage${SUFFIX}"
+            az group create --name "${RESOURCE_GROUP_NAME}" --location "westus"
+            az storage account create --name "${STORAGE_ACCOUNT_NAME}" --resource-group "${RESOURCE_GROUP_NAME}" --location "westus" --sku "Standard_LRS"
+            az storage container create --name "edge" --account-name "${STORAGE_ACCOUNT_NAME}"
+
+            az storage blob upload-batch --account-name "${STORAGE_ACCOUNT_NAME}" --destination "edge" --source "~/ubuntu-image-output/" --pattern "*.img" --overwrite
+            az storage blob upload-batch --account-name "${STORAGE_ACCOUNT_NAME}" --destination "edge" --source "~/ubuntu-image-output/" --pattern "*.iso" --overwrite
