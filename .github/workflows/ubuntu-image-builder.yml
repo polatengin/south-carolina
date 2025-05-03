@@ -111,5 +111,4 @@ jobs:
             az storage account create --name "${STORAGE_ACCOUNT_NAME}" --resource-group "${RESOURCE_GROUP_NAME}" --location "westus" --sku "Standard_LRS"
             az storage container create --name "edge" --account-name "${STORAGE_ACCOUNT_NAME}"
 
-            az storage blob upload-batch --account-name "${STORAGE_ACCOUNT_NAME}" --destination "edge" --source "~/ubuntu-image-output/" --pattern "*.img" --overwrite
-            az storage blob upload-batch --account-name "${STORAGE_ACCOUNT_NAME}" --destination "edge" --source "~/ubuntu-image-output/" --pattern "*.iso" --overwrite
+            az storage blob upload --account-name "${STORAGE_ACCOUNT_NAME}" --container-name "edge" --file "~/ubuntu-image-output/ubuntu-amd64.iso" --overwrite true
