@@ -105,11 +105,13 @@ jobs:
 
           CONNECTION_STRING=$(az storage account show-connection-string --resource-group "${RESOURCE_GROUP_NAME}" --name "${STORAGE_ACCOUNT_NAME}" --query connectionString --output tsv)
 
+          az storage blob upload --account-name "${STORAGE_ACCOUNT_NAME}" --container-name "edge" --file "~/ubuntu-image-output/ubuntu-amd64.img" --connection-string "${CONNECTION_STRING}" --overwrite true
+          az storage blob upload --account-name "${STORAGE_ACCOUNT_NAME}" --container-name "edge" --file "~/ubuntu-image-output/ubuntu-amd64.iso" --connection-string "${CONNECTION_STRING}" --overwrite true
           az storage blob upload --account-name "${STORAGE_ACCOUNT_NAME}" --container-name "edge" --file "~/ubuntu-image-output/ubuntu-amd64.vhd" --connection-string "${CONNECTION_STRING}" --overwrite true
 
-          az image create --resource-group "${RESOURCE_GROUP_NAME}" --name ubuntu-custom-image --source https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net/edge/ubuntu-amd64.img --os-type Linux
-          az image create --resource-group "${RESOURCE_GROUP_NAME}" --name ubuntu-custom-image --source https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net/edge/ubuntu-amd64.iso --os-type Linux
           az image create --resource-group "${RESOURCE_GROUP_NAME}" --name ubuntu-custom-image --source https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net/edge/ubuntu-amd64.vhd --os-type Linux
+
+          az vm create --resource-group "${RESOURCE_GROUP_NAME}" --name "ubuntu-custom-vm" --image ubuntu-custom-image --admin-username azureuser --generate-ssh-keys --size Standard_DS1_v2
 
       - name: Upload built artifacts
         uses: actions/upload-artifact@v4
