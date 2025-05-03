@@ -83,6 +83,8 @@ jobs:
 
           sudo ubuntu-image --workdir ~/work-dir --output-dir ~/output-dir --disk-info ~/ubuntu/disk.info classic ~/ubuntu/amd64.yml
 
+          truncate -s %1048576 ubuntu-amd64.img
+
           sudo qemu-img convert -f raw -O vpc ~/output-dir/ubuntu-amd64.img ~/output-dir/ubuntu-amd64.iso
 
           sudo qemu-img convert -f raw -O vpc -o subformat=fixed ~/output-dir/ubuntu-amd64.img ~/output-dir/ubuntu-amd64.vhd
