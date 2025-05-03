@@ -101,14 +101,14 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
 
       - name: Create required resources
-        uses: azure/cli@v2
-        with:
-          inlineScript: |
-            SUFFIX=$(echo $RANDOM | cut -c 1-5)
-            RESOURCE_GROUP_NAME="ubuntu-image-${SUFFIX}-rg"
-            STORAGE_ACCOUNT_NAME="ubuntuimage${SUFFIX}"
-            az group create --name "${RESOURCE_GROUP_NAME}" --location "westus"
-            az storage account create --name "${STORAGE_ACCOUNT_NAME}" --resource-group "${RESOURCE_GROUP_NAME}" --location "westus" --sku "Standard_LRS"
-            az storage container create --name "edge" --account-name "${STORAGE_ACCOUNT_NAME}"
+        run: |
+          SUFFIX=$(echo $RANDOM | cut -c 1-5)
+          RESOURCE_GROUP_NAME="ubuntu-image-${SUFFIX}-rg"
+          STORAGE_ACCOUNT_NAME="ubuntuimage${SUFFIX}"
+          az group create --name "${RESOURCE_GROUP_NAME}" --location "westus"
+          az storage account create --name "${STORAGE_ACCOUNT_NAME}" --resource-group "${RESOURCE_GROUP_NAME}" --location "westus" --sku "Standard_LRS"
+          az storage container create --name "edge" --account-name "${STORAGE_ACCOUNT_NAME}"
 
-            az storage blob upload --account-name "${STORAGE_ACCOUNT_NAME}" --container-name "edge" --file "~/ubuntu-image-output/ubuntu-amd64.iso" --overwrite true
+          CONNECTION_STRING=$(az storage account show-connection-string -name "${STORAGE_ACCOUNT_NAME}" --resource-group "${RESOURCE_GROUP_NAME}" --query connectionString --output tsv)
+
+          az storage blob upload --account-name "${STORAGE_ACCOUNT_NAME}" --container-name "edge" --file "~/ubuntu-image-output/ubuntu-amd64.iso" --connection-string "${CONNECTION_STRING}" --overwrite true
