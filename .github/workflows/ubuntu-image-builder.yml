@@ -85,7 +85,7 @@ jobs:
 
           sudo qemu-img convert -f raw -O vpc ~/output-dir/ubuntu-amd64.img ~/output-dir/ubuntu-amd64.iso
 
-          sudo qemu-img convert -f raw -O vpc ~/output-dir/ubuntu-amd64.img ~/output-dir/ubuntu-amd64.vhd
+          sudo qemu-img convert -f raw -O vpc -o subformat=fixed ~/output-dir/ubuntu-amd64.img ~/output-dir/ubuntu-amd64.vhd
 
           mkdir -p ~/ubuntu-image-output
           cp ~/ubuntu/amd64.yml ~/ubuntu-image-output/
