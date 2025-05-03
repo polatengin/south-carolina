@@ -109,6 +109,6 @@ jobs:
           az storage account create --name "${STORAGE_ACCOUNT_NAME}" --resource-group "${RESOURCE_GROUP_NAME}" --location "westus" --sku "Standard_LRS"
           az storage container create --name "edge" --account-name "${STORAGE_ACCOUNT_NAME}"
 
-          CONNECTION_STRING=$(az storage account show-connection-string -name "${STORAGE_ACCOUNT_NAME}" --resource-group "${RESOURCE_GROUP_NAME}" --query connectionString --output tsv)
+          CONNECTION_STRING=$(az storage account show-connection-string --resource-group "${RESOURCE_GROUP_NAME}" --name "${STORAGE_ACCOUNT_NAME}" --query connectionString --output tsv)
 
           az storage blob upload --account-name "${STORAGE_ACCOUNT_NAME}" --container-name "edge" --file "~/ubuntu-image-output/ubuntu-amd64.iso" --connection-string "${CONNECTION_STRING}" --overwrite true
