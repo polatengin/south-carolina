@@ -12,7 +12,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Build Ubuntu Image
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+
+      - name: Build and upload ubuntu image
         run: |
           mkdir -p ~/work-dir
           mkdir -p ~/output-dir
@@ -86,22 +93,6 @@ jobs:
 
           popd
 
-      - name: Upload built artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ubuntu-build-output.zip
-          path: ~/ubuntu-image-output/
-          compression-level: 0
-
-      - name: Azure login
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-
-      - name: Create required resources
-        run: |
           SUFFIX=$(echo $RANDOM | cut -c 1-5)
           RESOURCE_GROUP_NAME="ubuntu-image-${SUFFIX}-rg"
           STORAGE_ACCOUNT_NAME="ubuntuimage${SUFFIX}"
@@ -112,3 +103,12 @@ jobs:
           CONNECTION_STRING=$(az storage account show-connection-string --resource-group "${RESOURCE_GROUP_NAME}" --name "${STORAGE_ACCOUNT_NAME}" --query connectionString --output tsv)
 
           az storage blob upload --account-name "${STORAGE_ACCOUNT_NAME}" --container-name "edge" --file "~/ubuntu-image-output/ubuntu-amd64.iso" --connection-string "${CONNECTION_STRING}" --overwrite true
+
+          az image create --resource-group "${RESOURCE_GROUP_NAME}" --name ubuntu-custom-image --source https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net/edge/ubuntu-amd64.iso --os-type Linux
+
+      - name: Upload built artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ubuntu-build-output.zip
+          path: ~/ubuntu-image-output/
+          compression-level: 0
