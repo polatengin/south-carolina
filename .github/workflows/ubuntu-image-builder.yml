@@ -103,7 +103,7 @@ jobs:
       - name: Create required resources
         uses: azure/cli@v2
         with:
-          inlineScripts: |
+          inlineScript: |
             SUFFIX=$(echo $RANDOM | cut -c 1-5)
             RESOURCE_GROUP_NAME="ubuntu-image-${SUFFIX}-rg"
             STORAGE_ACCOUNT_NAME="ubuntuimage${SUFFIX}"
