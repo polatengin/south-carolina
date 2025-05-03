@@ -85,11 +85,14 @@ jobs:
 
           sudo qemu-img convert -f raw -O vpc ~/output-dir/ubuntu-amd64.img ~/output-dir/ubuntu-amd64.iso
 
+          sudo qemu-img convert -f raw -O vpc ~/output-dir/ubuntu-amd64.img ~/output-dir/ubuntu-amd64.vhd
+
           mkdir -p ~/ubuntu-image-output
           cp ~/ubuntu/amd64.yml ~/ubuntu-image-output/
           cp ~/ubuntu/disk.info ~/ubuntu-image-output/
           cp ~/output-dir/ubuntu-amd64.img ~/ubuntu-image-output/
           cp ~/output-dir/ubuntu-amd64.iso ~/ubuntu-image-output/
+          cp ~/output-dir/ubuntu-amd64.vhd ~/ubuntu-image-output/
 
           popd
 
@@ -102,9 +105,11 @@ jobs:
 
           CONNECTION_STRING=$(az storage account show-connection-string --resource-group "${RESOURCE_GROUP_NAME}" --name "${STORAGE_ACCOUNT_NAME}" --query connectionString --output tsv)
 
-          az storage blob upload --account-name "${STORAGE_ACCOUNT_NAME}" --container-name "edge" --file "~/ubuntu-image-output/ubuntu-amd64.iso" --connection-string "${CONNECTION_STRING}" --overwrite true
+          az storage blob upload --account-name "${STORAGE_ACCOUNT_NAME}" --container-name "edge" --file "~/ubuntu-image-output/ubuntu-amd64.vhd" --connection-string "${CONNECTION_STRING}" --overwrite true
 
+          az image create --resource-group "${RESOURCE_GROUP_NAME}" --name ubuntu-custom-image --source https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net/edge/ubuntu-amd64.img --os-type Linux
           az image create --resource-group "${RESOURCE_GROUP_NAME}" --name ubuntu-custom-image --source https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net/edge/ubuntu-amd64.iso --os-type Linux
+          az image create --resource-group "${RESOURCE_GROUP_NAME}" --name ubuntu-custom-image --source https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net/edge/ubuntu-amd64.vhd --os-type Linux
 
       - name: Upload built artifacts
         uses: actions/upload-artifact@v4
